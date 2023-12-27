@@ -6,11 +6,12 @@ import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Rank from './components/Rank/Rank';
 import Particle from './components/Particle/Particle';
-import Clarifai from 'clarifai';
 
-const app = new Clarifai.App({
-  apiKey: '7362fb797d5a40d4bb987a12a777ec10'
-});
+const PAT = '325a9cf483c342c2b8ba59c6b31c89f4';
+const USER_ID = 'clarifai';
+const APP_ID = 'main';
+const MODEL_ID = 'face-detection';
+const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';
 
 class App extends Component {
   constructor(){
@@ -26,12 +27,39 @@ class App extends Component {
   }
 
   onButtonSubmit = () => {
-    this.setState({imageUrl: this.state.input})
-    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input).then(function(response){
-        console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
+    this.setState({imageUrl: this.state.input});
+    const raw = JSON.stringify({
+      "user_app_id": {
+          "user_id": USER_ID,
+          "app_id": APP_ID
       },
-      function(err){
-        // 
+      "inputs": [
+          {
+              "data": {
+                  "image": {
+                      "url": this.state.input
+                  }
+              }
+          }
+      ]
+    });
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Key ' + PAT
+      },
+      body: raw
+    };
+
+    fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
+    .then(response => response.json())
+    .then(response => {
+        console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
+        },
+        function(err){
+          // 
       }
     );
   }
