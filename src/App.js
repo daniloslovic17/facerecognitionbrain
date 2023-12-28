@@ -7,6 +7,7 @@ import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Rank from './components/Rank/Rank';
 import Particle from './components/Particle/Particle';
 import SignIn from './components/SignIn/SignIn';
+import Register from './components/Register/Register';
 
 const PAT = '325a9cf483c342c2b8ba59c6b31c89f4';
 const USER_ID = 'clarifai';
@@ -79,23 +80,27 @@ class App extends Component {
     .catch(err => console.log(err));
   }
 
-  onRouteChange = () => {
-    this.setState({ route: 'home' });
+  onRouteChange = (route) => {
+    this.setState({ route: route });
   }
 
   render(){
     return (
       <div className="App">
         <Particle />
-        <Navigation />
-        { this.state.route === 'signin'
-          ? <SignIn onRouteChange={this.onRouteChange} />
-          : <div>
+        <Navigation onRouteChange={this.onRouteChange} />
+        { this.state.route === 'home'
+          ? <div>
               <Logo />
               <Rank />
               <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
               <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl} />
             </div>
+          : (
+            this.state.route === 'signin'
+            ? <SignIn onRouteChange={this.onRouteChange} />
+            : <Register onRouteChange={this.onRouteChange} />
+            )
           }
       </div>
     );
