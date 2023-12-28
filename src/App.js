@@ -6,6 +6,7 @@ import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Rank from './components/Rank/Rank';
 import Particle from './components/Particle/Particle';
+import SignIn from './components/SignIn/SignIn';
 
 const PAT = '325a9cf483c342c2b8ba59c6b31c89f4';
 const USER_ID = 'clarifai';
@@ -20,6 +21,7 @@ class App extends Component {
       input: '',
       imageUrl: '',
       box: {},
+      route: 'signin',
     }
   }
 
@@ -77,15 +79,24 @@ class App extends Component {
     .catch(err => console.log(err));
   }
 
+  onRouteChange = () => {
+    this.setState({ route: 'home' });
+  }
+
   render(){
     return (
       <div className="App">
         <Particle />
         <Navigation />
-        <Logo />
-        <Rank />
-        <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
-        <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl} />
+        { this.state.route === 'signin'
+          ? <SignIn onRouteChange={this.onRouteChange} />
+          : <div>
+              <Logo />
+              <Rank />
+              <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
+              <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl} />
+            </div>
+          }
       </div>
     );
   }
