@@ -27,6 +27,12 @@ class App extends Component {
     }
   }
 
+  // componentDidMount(){
+  //   fetch('http://localhost:3001')
+  //   .then(response => response.json())
+  //   .then(data => console.log(data));
+  // };
+
   calculateFaceLocation = (data) => {
     return data.outputs[0].data.regions.map((region, i) => {
         const clarifaiFace = data.outputs[0].data.regions[i].region_info.bounding_box;
