@@ -42,7 +42,8 @@ class App extends Component {
         email: data.email,
         entries: data.entries,
         joined: data.joined
-      }
+      },
+      imageUrl: ''
     })
   }
 
