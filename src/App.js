@@ -9,12 +9,6 @@ import Particle from './components/Particle/Particle';
 import SignIn from './components/SignIn/SignIn';
 import Register from './components/Register/Register';
 
-const PAT = '325a9cf483c342c2b8ba59c6b31c89f4';
-const USER_ID = 'clarifai';
-const APP_ID = 'main';
-const MODEL_ID = 'face-detection';
-const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';
-
 class App extends Component {
   constructor(){
     super();
@@ -79,51 +73,32 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({imageUrl: this.state.input});
-    const raw = JSON.stringify({
-      "user_app_id": {
-          "user_id": USER_ID,
-          "app_id": APP_ID
-      },
-      "inputs": [
-          {
-              "data": {
-                  "image": {
-                      "url": this.state.input
-                  }
-              }
-          }
-      ]
-    });
-
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Key ' + PAT
-      },
-      body: raw
-    };
-
-    fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
-    .then(response => response.json())
-    .then(response => {
-      if(response){
-        fetch('http://localhost:3001/image', {
-          method: 'put',
+    fetch('http://localhost:3001/imageapi', {
+          method: 'post',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
-            id: this.state.user.id
+            imageurl: this.state.input
           })
         })
         .then(response => response.json())
-        .then(count => {
-          this.setState(Object.assign(this.state.user, { entries: count.entries }))
+        .then(response => {
+          if(response){
+            fetch('http://localhost:3001/image', {
+              method: 'put',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                id: this.state.user.id
+              })
+            })
+            .then(response => response.json())
+            .then(count => {
+              this.setState(Object.assign(this.state.user, { entries: count.entries }))
+            })
+            .catch(console.log)
+          }
+          this.displayFaceBox(this.calculateFaceLocation(response))
         })
-        .catch(console.log)
-      }
-      this.displayFaceBox(this.calculateFaceLocation(response))
-    })
-    .catch(err => console.log(err));
+        .catch(err => console.log(err));
   }
 
   onRouteChange = (route) => {
